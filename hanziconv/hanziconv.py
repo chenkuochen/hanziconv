@@ -67,6 +67,21 @@ class HanziConv(object):
         return ''.join(final)
 
     @classmethod
+    def __detect(cls, char):
+        if isinstance(char, bytes):
+            char = char.decode('utf-8')
+        tradMap = cls.__traditional_charmap
+        simpMap = cls.__simplified_charmap
+        index = tradMap.find(char)
+        if index != -1:
+            return 'traditional'
+        index = simpMap.find(char)
+        if index != -1:
+            return 'simplified'
+        return 'both'
+
+
+    @classmethod
     def toSimplified(cls, text):
         """Convert `text` to simplified character string.  Assuming text is
         traditional character string
@@ -112,5 +127,15 @@ class HanziConv(object):
         t2 = cls.toSimplified(text2)
         return t1 == t2
 
+    @classmethod
+    def getFormat(cls, char):
+        """Detect `char`'s format.
+
+        :param char: char to be detected
+        :returns:   'both' -> both simplified and traditional
+                    'traditional' -> traditional
+                    'simplified' -> simplified
+        """
+        return cls.__detect(char)
 
 del traditional_charmap, simplified_charmap
